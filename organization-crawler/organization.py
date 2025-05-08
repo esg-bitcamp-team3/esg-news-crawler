@@ -12,7 +12,6 @@ def get_company_info(company_name):
     driver.get("https://www.jobkorea.co.kr")  # 기업 검색 페이지 직접 접근
     with open("debug_page.html", "w", encoding="utf-8") as f:
         f.write(driver.page_source)
-
     try:
         # ✅ 검색어 입력
         search_input = driver.find_element(By.ID, "stext")
@@ -74,10 +73,6 @@ def get_company_info(company_name):
                                            '//*[@id="company-body"]/div[1]/div[1]/div/table/tbody/tr[5]/td[2]/div/div','4대보험')
         info['주소'] = safe_xpath(driver,
                                          '//*[@id="company-body"]/div[1]/div[1]/div/table/tbody/tr[6]/td[2]/div/div','주소')
-        info['영업이익'] = safe_xpath(driver,
-                                '//*[@id="company-body"]/div[1]/div[2]/div/div/div[3]/div[2]/div[1]/div[2]/', '영업이익')
-        info['당기순이익'] = safe_xpath(driver,
-                                  '//*[@id="company-body"]/div[1]/div[2]/div/div/div[4]/div[2]/div[1]/div[2]', '당기순이익')
 
 
 

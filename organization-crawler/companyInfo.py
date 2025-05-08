@@ -61,6 +61,19 @@ def get_company_info(company_name):
 
         driver.switch_to.window(driver.window_handles[-1])
 
+        # 기업 정보 탭으로 이동이 필요한 경우
+        try:
+            active_tab = driver.find_element(By.CSS_SELECTOR, ".company-nav-item.active .name").text.strip()
+            if active_tab != "기업정보":
+                tabs = driver.find_elements(By.CSS_SELECTOR, ".company-nav-item .name")
+                for tab in tabs:
+                    if tab.text.strip() == "기업정보":
+                        tab.click()
+                        time.sleep(1)
+                        break
+        except Exception as e:
+            print(f"[경고] {company_name}: 기업정보 탭 탐색 오류 - {e}")
+
         info = parse_company_info(driver, company_name)
         return info
 
@@ -72,7 +85,7 @@ def get_company_info(company_name):
         driver.quit()
 
 # ✅ CSV에서 기업명 불러오기
-df = pd.read_csv("../data/companyNameTest1.csv")
+df = pd.read_csv("../data/companyNameFinal.csv")
 print("CSV에서 불러온 컬럼:", df.columns)
 
 company_names = df["기업명"].dropna().unique().tolist()

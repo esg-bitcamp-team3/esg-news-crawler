@@ -7,9 +7,27 @@ from kobert_transformers import get_kobert_model, get_tokenizer
 from transformers import BertTokenizer, BertForSequenceClassification
 import os
 import pandas as pd
+from pymongo import MongoClient
 
 # 저장 파일 이름
 csv_file = "esg_predictions.csv"
+
+# Atlas URI
+# MONGO_URI = "mongodb+srv://jinpang97:MONGOsj!0122@cluster0.bxnwcsi.mongodb.net/CrawlData"
+MONGO_URI = "mongodb+srv://jinpang97:MONGOsj!0122@cluster0.bxnwcsi.mongodb.net/?retryWrites=true&w=majority"
+
+# MongoDB 연결 설정
+client = MongoClient(MONGO_URI)
+db = client["CrawlData"]  # 원하는 DB 이름
+collection = db["crawlingPreprocessing"]  # 원하는 collection 이름
+
+def save_result_to_mongo(result):
+    try:
+        collection.insert_one(result)
+        print("🌍 MongoDB 저장 완료!")
+    except Exception as e:
+        print("❌ MongoDB 저장 실패:", e)
+
 
 # 파일이 없으면 헤더 포함 저장, 있으면 append
 def save_result_to_csv(result):
@@ -98,8 +116,9 @@ for msg in consumer:
     }
 
     print("📊 분석 완료:", result)
-    save_result_to_csv(result)  # 📁 CSV 저장
-    print("📁 저장 완료: esg_predictions.csv")
+    save_result_to_csv(result)  # CSV 저장
+    save_result_to_mongo(result) #atlas 저장
+    print("저장 완료: esg_predictions.csv")
     print("-" * 80)
 
     # TODO: MongoDB에 저장하거나 Kafka로 다시 전송 가능
